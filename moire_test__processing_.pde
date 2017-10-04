@@ -49,27 +49,12 @@ void draw() {
   background(255);
   image(underlay, 0, 0);
   //drawOverlay(maskPos);
-  if (forward) {
-    if (maskPos < width) {
-      maskPos += speed;
-    } else {
-      forward = false;
-      maskPos -= speed;
-    }
-  } else {
-    if (maskPos > 0) {
-      maskPos -= speed;
-    } else {
-      forward = true;
-      maskPos += speed;
-    }
-  }
 }
 
 void drawCircle(PGraphics graphics, PVector p) {
   graphics.beginDraw();
   graphics.clear();
-  //graphics.background(255);
+  graphics.background(255);
   graphics.noStroke();
   graphics.fill(0);
   graphics.ellipse(p.x, p.y, circleSize, circleSize);
@@ -87,11 +72,12 @@ void drawOverlayMask(PGraphics graphics, float offset) {
   graphics.endDraw();
 }
 
-void drawOverlay(float offset) {
+void drawOverlay() {
   noStroke();
   fill(0);
-  for (float i = offset; i < width; i += overlayLineWidth + overlayLineSpacing) {
-    rect(i, 0, overlayLineWidth, height);
+  for (int i = -(numOverlayLines / 2); i < (numOverlayLines / 2); i++) {
+    float x = i * (overlayLineWidth + overlayLineSpacing);
+    rect(x, 0, overlayLineWidth, height);
   }
 }
 
