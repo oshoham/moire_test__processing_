@@ -3,7 +3,7 @@
 // PDF Output
 import processing.pdf.*;
 
-boolean isExport = false;
+boolean isExport = true;
 
 // Overlay params
 ArrayList<PVector> frames = new ArrayList<PVector>();
@@ -16,12 +16,14 @@ int circleSize = 50;
 int circleSpacing = 5;
  
 void setup() {
-  size(600, 600);
-  //size(600, 600, PDF, "moire.pdf");
-  
+  //size(600, 600);
+  size(600, 600, PDF, "moire.pdf");
 
   for (int i = 0; i < width; i += circleSpacing) {
-    frames.add(new PVector(i, height / 2));
+    frames.add(new PVector(
+      width / 2 + width / 4 * cos(map(i, 0, width, 0, TWO_PI)),
+      height / 2 + width / 4 * sin(map(i, 0, width, 0, TWO_PI))
+    ));
   }
   
   overlayLineWidth = width / numOverlayLines;
@@ -38,11 +40,9 @@ void setup() {
 
     PImage maskedFrame = framesBuffer.get();
     PImage mask = maskBuffer.get();
-    //maskedFrame.mask(maskBuffer.get());
+
     alternateMask(maskedFrame, mask);
-    //maskedFrame.updatePixels();
-    //maskedFrame = maskBuffer.get();
-    
+
     underlayBuffer.image(maskedFrame, 0, 0); 
   }
   underlayBuffer.endDraw();
@@ -67,7 +67,7 @@ void drawCircle(PGraphics graphics, PVector p) {
   graphics.beginDraw();
   graphics.clear();
   graphics.noStroke();
-  graphics.fill(0, 255);
+  graphics.fill(0);
   graphics.ellipse(p.x, p.y, circleSize, circleSize);
   graphics.endDraw();
 }
@@ -75,7 +75,7 @@ void drawCircle(PGraphics graphics, PVector p) {
 void drawOverlayMask(PGraphics graphics, float offset) {
   graphics.beginDraw();
   graphics.background(0);
-  graphics.stroke(255, 255);
+  graphics.stroke(255);
   graphics.strokeWeight(overlayLineSpacing);
   for (float i = offset; i < width; i += overlayLineWidth + overlayLineSpacing) {
     graphics.line(i + overlayLineWidth, 0, i + overlayLineWidth, height);
@@ -92,18 +92,18 @@ void drawOverlay() {
   }
 }
 
-void alternateMask(PImage img1, PImage img2) {
-  img1.loadPixels();
-  img2.loadPixels();
-  for (int i = 0; i < img2.pixels.length; i++) {
-    float a1 = alpha(img1.pixels[i]);
-    if (a1 != 0) {
-      float a2 = brightness(img2.pixels[i]);
-      float r = red(img1.pixels[i]);
-      float g = green(img1.pixels[i]);
-      float b = blue(img1.pixels[i]);
-      img1.pixels[i] = color(r, g, b, a2);
+void alternateMask(PImage target, PImage mask) {
+  target.loadPixels();
+  mask.loadPixels();
+  for (int i = 0; i < mask.pixels.length; i++) {
+    float originalAlpha = alpha(target.pixels[i]);
+    if (originalAlpha != 0) {
+      float maskAlpha = brightness(mask.pixels[i]);
+      float r = red(target.pixels[i]);
+      float g = green(target.pixels[i]);
+      float b = blue(target.pixels[i]);
+      target.pixels[i] = color(r, g, b, maskAlpha);
     }
   }
-  img1.updatePixels();
+  target.updatePixels();
 }
