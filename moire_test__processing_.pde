@@ -41,10 +41,6 @@ void setup() {
   underlay = underlayBuffer.get();
 }
 
-float maskPos = 0;
-float speed = 0.05;
-boolean forward = true;
-
 void draw() {
   background(255);
   image(underlay, 0, 0);
