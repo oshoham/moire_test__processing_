@@ -11,7 +11,7 @@ int circleSpacing = 25;
 PImage underlay;
  
 void setup() {
-  size(600, 600);
+  size(1000, 700);
 
   for (int i = 0; i < width; i += circleSpacing) {
     frames.add(new PVector(i, height / 2));
@@ -25,7 +25,7 @@ void setup() {
   PGraphics underlayBuffer = createGraphics(width, height);
    
   underlayBuffer.beginDraw();
-  for (int j = 0; j < 1; j++) {
+  for (int j = 0; j < frames.size(); j++) {
     drawCircle(framesBuffer, frames.get(j));
     drawOverlayMask(maskBuffer, j * overlayLineSpacing);
 
@@ -33,26 +33,27 @@ void setup() {
     PImage mask = maskBuffer.get();
     //maskedFrame.mask(maskBuffer.get());
     alternateMask(maskedFrame, mask);
+    //maskedFrame.updatePixels();
     //maskedFrame = maskBuffer.get();
     
     underlayBuffer.image(maskedFrame, 0, 0); 
   }
   underlayBuffer.endDraw();
   underlay = underlayBuffer.get();
+  background(255);
+  image(underlay, 0, 0);
 }
 
 void draw() {
-  background(255);
-  image(underlay, 0, 0);
+  
   //drawOverlay(maskPos);
 }
 
 void drawCircle(PGraphics graphics, PVector p) {
   graphics.beginDraw();
   graphics.clear();
-  graphics.background(255);
   graphics.noStroke();
-  graphics.fill(0);
+  graphics.fill(0, 255);
   graphics.ellipse(p.x, p.y, circleSize, circleSize);
   graphics.endDraw();
 }
@@ -60,7 +61,7 @@ void drawCircle(PGraphics graphics, PVector p) {
 void drawOverlayMask(PGraphics graphics, float offset) {
   graphics.beginDraw();
   graphics.background(0);
-  graphics.stroke(255);
+  graphics.stroke(255, 255);
   graphics.strokeWeight(overlayLineSpacing);
   for (float i = offset; i < width; i += overlayLineWidth + overlayLineSpacing) {
     graphics.line(i + overlayLineWidth, 0, i + overlayLineWidth, height);
@@ -78,12 +79,11 @@ void drawOverlay() {
 }
 
 void alternateMask(PImage img1, PImage img2) {
-  //img1.loadPixels();
-  //img2.loadPixels();
+  img1.loadPixels();
+  img2.loadPixels();
   for (int i = 0; i < img2.pixels.length; i++) {
-    float a1 = brightness(img1.pixels[i]);
+    float a1 = alpha(img1.pixels[i]);
     if (a1 != 0) {
-      //print(a1);
       float a2 = brightness(img2.pixels[i]);
       float r = red(img1.pixels[i]);
       float g = green(img1.pixels[i]);
