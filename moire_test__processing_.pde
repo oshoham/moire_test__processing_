@@ -1,17 +1,24 @@
 // reference: https://wewanttolearn.files.wordpress.com/2015/10/brief-01_moire-system-analysis_linear-animation-page-001.jpg
 
+// PDF Output
+import processing.pdf.*;
+
+boolean isExport = false;
+
+// Overlay params
 ArrayList<PVector> frames = new ArrayList<PVector>();
 int numOverlayLines = 100;
-float overlayLineWidth;
-float overlayLineSpacing;
-
-int circleSize = 50;
-int circleSpacing = 25;
-
+float overlayLineWidth, overlayLineSpacing;
 PImage underlay;
+
+// Example draw params
+int circleSize = 50;
+int circleSpacing = 5;
  
 void setup() {
   size(600, 600);
+  //size(600, 600, PDF, "moire.pdf");
+  
 
   for (int i = 0; i < width; i += circleSpacing) {
     frames.add(new PVector(i, height / 2));
@@ -45,7 +52,15 @@ void setup() {
 void draw() {
   background(255);
   image(underlay, 0, 0);
-  drawOverlay();
+  
+  if(isExport){
+    PGraphicsPDF pdf = (PGraphicsPDF) g;  // Get the renderer
+    pdf.nextPage();
+    drawOverlay();
+    exit();
+  } else {
+    drawOverlay();
+  }
 }
 
 void drawCircle(PGraphics graphics, PVector p) {
@@ -71,7 +86,7 @@ void drawOverlayMask(PGraphics graphics, float offset) {
 void drawOverlay() {
   noStroke();
   fill(0);
-  for (int i = -(numOverlayLines / 2); i < (numOverlayLines / 2); i++) {
+  for (int i = -numOverlayLines; i < numOverlayLines; i++) {
     float x = i * (overlayLineWidth + overlayLineSpacing);
     rect(mouseX + x, 0, overlayLineWidth, height);
   }
