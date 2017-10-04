@@ -11,7 +11,7 @@ int circleSpacing = 25;
 PImage underlay;
  
 void setup() {
-  size(1000, 700);
+  size(600, 600);
 
   for (int i = 0; i < width; i += circleSpacing) {
     frames.add(new PVector(i, height / 2));
@@ -40,13 +40,12 @@ void setup() {
   }
   underlayBuffer.endDraw();
   underlay = underlayBuffer.get();
-  background(255);
-  image(underlay, 0, 0);
 }
 
 void draw() {
-  
-  //drawOverlay(maskPos);
+  background(255);
+  image(underlay, 0, 0);
+  drawOverlay();
 }
 
 void drawCircle(PGraphics graphics, PVector p) {
@@ -74,7 +73,7 @@ void drawOverlay() {
   fill(0);
   for (int i = -(numOverlayLines / 2); i < (numOverlayLines / 2); i++) {
     float x = i * (overlayLineWidth + overlayLineSpacing);
-    rect(x, 0, overlayLineWidth, height);
+    rect(mouseX + x, 0, overlayLineWidth, height);
   }
 }
 
