@@ -3,107 +3,82 @@
 // PDF Output
 import processing.pdf.*;
 
-boolean isExport = true;
-
 // Overlay params
-ArrayList<PVector> frames = new ArrayList<PVector>();
-int numOverlayLines = 100;
-float overlayLineWidth, overlayLineSpacing;
-PImage underlay;
+PGraphics underlay;
 
-// Example draw params
-int circleSize = 50;
-int circleSpacing = 5;
+/*
+  Configure sketch here
+*/
+
+int numOverlayLines = 100; // number of slits
+boolean isExport = false;   // Preview or export to PDF?
+
+ArrayList<PVector> frameList = new ArrayList<PVector>();
  
 void setup() {
-  //size(600, 600);
-  size(600, 600, PDF, "moire.pdf");
+  // Change this if you want to preview
+  size(600, 600);
+  //size(600, 600, PDF, "moire.pdf");
 
-  for (int i = 0; i < width; i += circleSpacing) {
-    frames.add(new PVector(
-      width / 2 + width / 4 * cos(map(i, 0, width, 0, TWO_PI)),
-      height / 2 + width / 4 * sin(map(i, 0, width, 0, TWO_PI))
-    ));
+  // set up the frame
+  underlay = createGraphics(width, height);
+  underlay.beginDraw();
+  setupFrame();
+  
+  PGraphics frames = createGraphics(width, height);
+  
+  for (int f = 0; f < frameList.size(); f++) {
+    drawFrame(frames, frameList.get(f));
+
+    // Update underlay with new frame
+    appendToUnderlay(underlay, frames, f, numOverlayLines); 
   }
   
-  overlayLineWidth = width / numOverlayLines;
-  overlayLineSpacing = overlayLineWidth / max(frames.size() - 1, 1);
-  
-  PGraphics framesBuffer = createGraphics(width, height);
-  PGraphics maskBuffer = createGraphics(width, height);
-  PGraphics underlayBuffer = createGraphics(width, height);
-   
-  underlayBuffer.beginDraw();
-  for (int j = 0; j < frames.size(); j++) {
-    drawCircle(framesBuffer, frames.get(j));
-    drawOverlayMask(maskBuffer, j * overlayLineSpacing);
-
-    PImage maskedFrame = framesBuffer.get();
-    PImage mask = maskBuffer.get();
-
-    alternateMask(maskedFrame, mask);
-
-    underlayBuffer.image(maskedFrame, 0, 0); 
-  }
-  underlayBuffer.endDraw();
-  underlay = underlayBuffer.get();
+  underlay.endDraw();
 }
 
 void draw() {
   background(255);
   image(underlay, 0, 0);
   
+  PImage overlay = generateOverlay(width, height, numOverlayLines);
+  
   if(isExport){
+    noLoop(); // Only draw once
     PGraphicsPDF pdf = (PGraphicsPDF) g;  // Get the renderer
     pdf.nextPage();
-    drawOverlay();
-    exit();
+    image(overlay, 0, 0);
+    exit(); // exit the program
   } else {
-    drawOverlay();
+    image(overlay, 0, 0);
   }
 }
 
-void drawCircle(PGraphics graphics, PVector p) {
-  graphics.beginDraw();
-  graphics.clear();
-  graphics.noStroke();
-  graphics.fill(0);
-  graphics.ellipse(p.x, p.y, circleSize, circleSize);
-  graphics.endDraw();
-}
 
-void drawOverlayMask(PGraphics graphics, float offset) {
-  graphics.beginDraw();
-  graphics.background(0);
-  graphics.stroke(255);
-  graphics.strokeWeight(overlayLineSpacing);
-  for (float i = offset; i < width; i += overlayLineWidth + overlayLineSpacing) {
-    graphics.line(i + overlayLineWidth, 0, i + overlayLineWidth, height);
-  }
-  graphics.endDraw();
-}
+/*
+  DRAW YOUR FRAME HERE
+*/
 
-void drawOverlay() {
-  noStroke();
-  fill(0);
-  for (int i = -numOverlayLines; i < numOverlayLines; i++) {
-    float x = i * (overlayLineWidth + overlayLineSpacing);
-    rect(mouseX + x, 0, overlayLineWidth, height);
+// Example draw params
+int circleSize = 50;
+int circleSpacing = 5;
+
+// Calculate number of frames
+void setupFrame() {
+  for (int i = 0; i < width; i += circleSpacing) {
+    frameList.add(new PVector(
+      width / 2 + width / 4 * cos(map(i, 0, width, 0, TWO_PI)),
+      height / 2 + width / 4 * sin(map(i, 0, width, 0, TWO_PI))
+    ));
   }
 }
 
-void alternateMask(PImage target, PImage mask) {
-  target.loadPixels();
-  mask.loadPixels();
-  for (int i = 0; i < mask.pixels.length; i++) {
-    float originalAlpha = alpha(target.pixels[i]);
-    if (originalAlpha != 0) {
-      float maskAlpha = brightness(mask.pixels[i]);
-      float r = red(target.pixels[i]);
-      float g = green(target.pixels[i]);
-      float b = blue(target.pixels[i]);
-      target.pixels[i] = color(r, g, b, maskAlpha);
-    }
-  }
-  target.updatePixels();
+// Draw each frame
+void drawFrame(PGraphics underlay, PVector p) {
+  underlay.beginDraw();
+  underlay.clear();
+  underlay.noStroke();
+  underlay.fill(0);
+  underlay.ellipse(p.x, p.y, circleSize, circleSize);
+  underlay.endDraw();
 }
