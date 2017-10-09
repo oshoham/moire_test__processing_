@@ -10,18 +10,20 @@ PGraphics underlay;
   Configure sketch here
 */
 
-int numOverlayLines = 100; // number of slits
+int numOverlayLines = 50; // number of slits
 boolean isExport = false;   // Preview or export to PDF?
 
 ArrayList<PVector> frameList = new ArrayList<PVector>();
  
 void setup() {
+  noSmooth();
   // Change this if you want to preview
-  size(600, 600);
+  size(1000, 1000);
   //size(600, 600, PDF, "moire.pdf");
 
   // set up the frame
   underlay = createGraphics(width, height);
+  underlay.noSmooth();
   underlay.beginDraw();
   setupFrame();
   
@@ -41,7 +43,7 @@ void draw() {
   background(255);
   image(underlay, 0, 0);
   
-  PImage overlay = generateOverlay(width, height, numOverlayLines);
+  PImage overlay = generateOverlay(width, height, numOverlayLines, frameList.size());
   
   if(isExport){
     noLoop(); // Only draw once
@@ -61,7 +63,7 @@ void draw() {
 
 // Example draw params
 int circleSize = 50;
-int circleSpacing = 5;
+int circleSpacing = 25;
 
 // Calculate number of frames
 void setupFrame() {
