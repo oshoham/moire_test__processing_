@@ -2,18 +2,19 @@
 ** Moire utilities 
 */
 
-PImage generateOverlay(int w, int h, int lines) {
-  float lineWidth = w / lines;
-  float lineSpacing = lineWidth / max(frameList.size() - 1, 1);
+PImage generateOverlay(int w, int h, int frames, int spacing) {
+  float lineWidth = w / (spacing * max(frames - 1, 1));
+  int lines = int(w / (lineWidth + spacing));
 
   PGraphics overlay = createGraphics(w, h);
  
+  overlay.noSmooth();
   overlay.beginDraw();
   overlay.noStroke();
   overlay.fill(0);
  
   for (int i = -lines; i < lines; i++) {
-    float x = i * (lineWidth + lineSpacing);
+    float x = i * (lineWidth + spacing);
     overlay.rect(mouseX - x, 0, lineWidth, h);
   }
   
@@ -24,6 +25,7 @@ PImage generateOverlay(int w, int h, int lines) {
 
 PGraphics generateOverlayMask(int w, int h, float offset, float lineWidth, float lineSpacing) {
   PGraphics mask = createGraphics(w, h);
+  mask.noSmooth();
   mask.beginDraw();
   mask.background(0);
   mask.stroke(255);
@@ -38,13 +40,12 @@ PGraphics generateOverlayMask(int w, int h, float offset, float lineWidth, float
   return mask;
 }
 
-void appendToUnderlay(PGraphics underlay, PGraphics frame, int frameIndex, int lines) {
-  float lineWidth = underlay.width / lines;
-  float lineSpacing = lineWidth / max(frameList.size() - 1, 1);
-  float overlayOffset = frameIndex * lineSpacing;
+void appendToUnderlay(PGraphics underlay, PGraphics frame, int frameIndex, int frames, int spacing) {
+  float lineWidth = underlay.width / (spacing * max(frames - 1, 1));
+  float overlayOffset = frameIndex * spacing;
   
   PImage maskedFrame = frame.get();
-  PGraphics overlay = generateOverlayMask(underlay.width, underlay.height, overlayOffset, lineWidth, lineSpacing);
+  PGraphics overlay = generateOverlayMask(underlay.width, underlay.height, overlayOffset, lineWidth, spacing);
   PImage mask = overlay.get();
   
   alternateMask(maskedFrame, mask);
