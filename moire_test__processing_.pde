@@ -5,6 +5,7 @@ import processing.pdf.*;
 
 // Overlay params
 PGraphics underlay;
+int patternSize;
 
 ArrayList<PVector> frameList = new ArrayList<PVector>();
  
@@ -13,14 +14,16 @@ void setup() {
   size(1000, 1000);
   //size(600, 600, PDF, "moire.pdf");
 
+  patternSize = SLIT_SIZE * FRAMES * FRAMES;
+  
   noSmooth();
   
   // set up the frame
-  underlay = createGraphics(width, height);
+  underlay = createGraphics(patternSize, patternSize);
   underlay.beginDraw();
-  setupFrame();
+  setupFrame(patternSize, patternSize);
   
-  PGraphics frames = createGraphics(width, height);
+  PGraphics frames = createGraphics(patternSize, patternSize);
   
   for (int f = 0; f < frameList.size(); f++) {
     // Draw the frame
@@ -35,18 +38,18 @@ void setup() {
 
 void draw() {
   background(255);
-  image(underlay, 0, 0);
+  image(underlay, 0, 0, width, height);
   
-  PImage overlay = generateOverlay(width, height, FRAMES, SLIT_SIZE);
+  PImage overlay = generateOverlay(patternSize, patternSize, FRAMES, SLIT_SIZE);
   
   if(IS_EXPORT){
     noLoop(); // Only draw once
     PGraphicsPDF pdf = (PGraphicsPDF) g;  // Get the renderer
     pdf.nextPage();
-    image(overlay, 0, 0);
+    image(overlay, 0, 0, width, height);
     exit(); // exit the program
   } else {
-    image(overlay, 0, 0);
+    image(overlay, 0, 0, width, height);
   }
 }
 
@@ -57,29 +60,21 @@ void draw() {
 
 // Sketch Configuration
 boolean IS_EXPORT = false; // Preview or export to PDF?
-int FRAMES = 100;           // The number of frames in the sequence
+int FRAMES = 20;           // The number of frames in the sequence
 int SLIT_SIZE = 1;         // Slit size, must be an int >= 1
 
-
 // Example draw params
-int circleSize = 50;
+int circleSize = 100;
 //int circleSpacing = 25;
 
 // Generate the animation sequence
-void setupFrame() {
-  //for (int i = 0; i <= width; i += circleSpacing) {
-  //  frameList.add(new PVector(
-  //    width / 2 + width / 4 * cos(map(i, 0, width, 0, TWO_PI)),
-  //    height / 2 + width / 4 * sin(map(i, 0, width, 0, TWO_PI))
-  //  ));
-  //}
-  
-  int circleSpacing = width / (FRAMES - 1);
+void setupFrame(int w, int h) {
+  int circleSpacing = w / (FRAMES - 1);
   
   for (int i = 0; i < FRAMES; i++) {
     frameList.add(new PVector(
-      width / 2 + width / 4 * cos(map(i * circleSpacing, 0, width, 0, TWO_PI)),
-      height / 2 + width / 4 * sin(map(i * circleSpacing, 0, width, 0, TWO_PI))
+      w / 2 + w / 4 * cos(map(i * circleSpacing, 0, w, 0, TWO_PI)),
+      h / 2 + w / 4 * sin(map(i * circleSpacing, 0, w, 0, TWO_PI))
     ));
   }
 }
