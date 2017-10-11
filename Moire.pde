@@ -3,9 +3,8 @@
 */
 
 PImage generateOverlay(int w, int h, int frames, int spacing) {
-  float lineWidth = w / (spacing * max(frames - 1, 1));
+  float lineWidth = (spacing * (frames - 1));
   int lines = int(w / (lineWidth + spacing));
-
   PGraphics overlay = createGraphics(w, h);
  
   overlay.noSmooth();
@@ -15,7 +14,7 @@ PImage generateOverlay(int w, int h, int frames, int spacing) {
  
   for (int i = -lines; i < lines; i++) {
     float x = i * (lineWidth + spacing);
-    overlay.rect(mouseX - x, 0, lineWidth, h);
+    overlay.rect(((millis() / 50) % (lineWidth)) - x, 0, lineWidth, h);
   }
   
   overlay.endDraw();
@@ -41,7 +40,7 @@ PGraphics generateOverlayMask(int w, int h, float offset, float lineWidth, float
 }
 
 void appendToUnderlay(PGraphics underlay, PGraphics frame, int frameIndex, int frames, int spacing) {
-  float lineWidth = underlay.width / (spacing * max(frames - 1, 1));
+  float lineWidth = (spacing * (frames - 1));
   float overlayOffset = frameIndex * spacing;
   
   PImage maskedFrame = frame.get();
