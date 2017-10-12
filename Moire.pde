@@ -15,7 +15,7 @@ PImage generateOverlay(int w, int h, int frames, int spacing) {
  
   for (int i = -lines; i < lines; i++) {
     float x = i * (lineWidth + spacing);
-    overlay.rect(x, 0, lineWidth, h);
+    overlay.rect(mouseX - x, 0, lineWidth, h);
   }
   
   overlay.endDraw();
