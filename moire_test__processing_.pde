@@ -1,33 +1,27 @@
 // reference: https://wewanttolearn.files.wordpress.com/2015/10/brief-01_moire-system-analysis_linear-animation-page-001.jpg
 
-// PDF Output
-import processing.pdf.*;
-
 // Overlay params
 PGraphics underlay;
-int patternSize;
 
 ArrayList<PVector> frameList = new ArrayList<PVector>();
  
+boolean IS_EXPORT = true; // Preview or export to PDF?
 void setup() {
   // Change this if you want to preview
   size(1000, 1000);
-  //size(600, 600, PDF, "moire.pdf");
-
-  patternSize = SLIT_SIZE * FRAMES * FRAMES;
   
   noSmooth();
   
   // set up the frame
-  underlay = createGraphics(patternSize, patternSize);
+  underlay = createGraphics(width, height);
   underlay.beginDraw();
-  setupFrame(patternSize, patternSize);
+  setupFrame(width, height);
   
-  PGraphics frames = createGraphics(patternSize, patternSize);
+  PGraphics frames = createGraphics(width, height);
   
   for (int f = 0; f < frameList.size(); f++) {
     // Draw the frame
-    drawFrame(frames, frameList.get(f));
+    drawFrame(frames, frameList.get(f), width, height);
 
     // Update underlay with new frame
     appendToUnderlay(underlay, frames, f, FRAMES, SLIT_SIZE); 
@@ -40,13 +34,14 @@ void draw() {
   background(255);
   image(underlay, 0, 0, width, height);
   
-  PImage overlay = generateOverlay(patternSize, patternSize, FRAMES, SLIT_SIZE);
+  PImage overlay = generateOverlay(width, height, FRAMES, SLIT_SIZE);
   
   if(IS_EXPORT){
     noLoop(); // Only draw once
-    PGraphicsPDF pdf = (PGraphicsPDF) g;  // Get the renderer
-    pdf.nextPage();
+    saveFrame("moire_underlay.png");
+    background(255); // clear canvas
     image(overlay, 0, 0, width, height);
+    saveFrame("moire_overlay.png");
     exit(); // exit the program
   } else {
     image(overlay, 0, 0, width, height);
@@ -59,17 +54,15 @@ void draw() {
 */
 
 // Sketch Configuration
-boolean IS_EXPORT = false; // Preview or export to PDF?
-int FRAMES = 20;           // The number of frames in the sequence
+int FRAMES = 10;           // The number of frames in the sequence
 int SLIT_SIZE = 1;         // Slit size, must be an int >= 1
 
 // Example draw params
-int circleSize = 100;
-//int circleSpacing = 25;
+int circleSize = 150;
 
 // Generate the animation sequence
 void setupFrame(int w, int h) {
-  int circleSpacing = w / (FRAMES - 1);
+ float circleSpacing = w / (FRAMES);
   
   for (int i = 0; i < FRAMES; i++) {
     frameList.add(new PVector(
@@ -80,11 +73,12 @@ void setupFrame(int w, int h) {
 }
 
 // Draw each frame
-void drawFrame(PGraphics underlay, PVector p) {
+void drawFrame(PGraphics underlay, PVector p, int w, int h) {
   underlay.beginDraw();
   underlay.clear();
   underlay.noStroke();
   underlay.fill(0);
   underlay.ellipse(p.x, p.y, circleSize, circleSize);
+  //underlay.ellipse(w - p.x, h - p.y, circleSize, circleSize);
   underlay.endDraw();
 }
