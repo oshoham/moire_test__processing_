@@ -1,12 +1,13 @@
 // reference: https://wewanttolearn.files.wordpress.com/2015/10/brief-01_moire-system-analysis_linear-animation-page-001.jpg
 
 // PRINT AT 65%!!!!!
+// are you sure it wasn't 60.5%?
 
 
 // Overlay params
 PGraphics underlay;
  
-boolean IS_EXPORT = true; // Preview or export to PDF?
+boolean IS_EXPORT = false; // Preview or export to PDF?
 void setup() {
   // Change this if you want to preview
   size(1000, 1000);
@@ -16,7 +17,6 @@ void setup() {
   // set up the frame
   underlay = createGraphics(width, height);
   underlay.beginDraw();
-  setupFrame(width, height);
   
   PGraphics frameGraphic = createGraphics(width, height);
   
@@ -57,23 +57,6 @@ void draw() {
 // Sketch Configuration
 int FRAMES = 8;           // The number of frames in the sequence
 int SLIT_SIZE = 1;         // Slit size, must be an int >= 1
-
-  //ArrayList<PVector> frameList = new ArrayList<PVector>();
-// Generate the animation sequence
-void setupFrame(int w, int h) {
-  // Example draw params
-  //int circleSize = 150;
-
- //float circleSpacing = w / (FRAMES);
-  
- // for (int i = 0; i < FRAMES; i++) {
- //   frameList.add(new PVector(
- //     w / 2 + w / 4 * cos(map(i * circleSpacing, 0, w, 0, TWO_PI)),
- //     h / 2 + w / 4 * sin(map(i * circleSpacing, 0, w, 0, TWO_PI))
- //   ));
- // }
- 
-}
 
 // Draw each frame
 void drawFrame(PGraphics underlay, int frameIndex, int w, int h) {
