@@ -7,10 +7,10 @@
 // Overlay params
 PGraphics underlay;
  
-boolean IS_EXPORT = false; // Preview or export to PDF?
+boolean IS_EXPORT = true; // Preview or export to PDF?
 void setup() {
   // Change this if you want to preview
-  size(1000, 1000);
+  size(500, 500);
   
   noSmooth();
   
@@ -55,7 +55,7 @@ void draw() {
 */
 
 // Sketch Configuration
-int FRAMES = 8;           // The number of frames in the sequence
+int FRAMES = 6;           // The number of frames in the sequence
 int SLIT_SIZE = 1;         // Slit size, must be an int >= 1
 
 // Draw each frame
@@ -159,7 +159,7 @@ void drawFrame(PGraphics underlay, int frameIndex, int w, int h) {
       underlay.fill(0);
     } else {
       underlay.stroke(0);
-      underlay.strokeWeight(10);
+      underlay.strokeWeight(7);
       underlay.noFill();
     }
     underlay.rect(0, 0, circleSize, circleSize);
