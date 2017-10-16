@@ -62,27 +62,78 @@ int SLIT_SIZE = 1;         // Slit size, must be an int >= 1
 void drawFrame(PGraphics underlay, int frameIndex, int w, int h) {
   underlay.beginDraw();
   underlay.clear();
-  underlay.stroke(0);
-  underlay.strokeWeight(20);
-  underlay.noFill();
   
-  underlay.rectMode(CENTER);
+  /* Draw moving, rotating rectangles */
+  //underlay.stroke(0);
+  //underlay.strokeWeight(20);
+  //underlay.noFill();
   
-  int squareSize = 100;
-  float squareCount = underlay.width / (squareSize * 1.5);
+  //underlay.rectMode(CENTER);
+  
+  //int squareSize = 100;
  
-  for(int x = 0; x < underlay.width; x+= squareSize * 1.5) {
-    float _squareSize = map(x, 0, underlay.width, squareSize / 3, squareSize);
-    underlay.strokeWeight(map(x, 0, underlay.width, 10, 20));
-    for(int y = 0; y < underlay.height; y+= squareSize * 1.5) {
-      underlay.pushMatrix();
-      underlay.translate(x + (frameIndex * squareSize / FRAMES),y);
-      underlay.rotate((TWO_PI / FRAMES) * frameIndex);
-      underlay.rect(0, 0, _squareSize, _squareSize);
-      underlay.popMatrix();
+  //for(int x = 0; x < underlay.width; x+= squareSize * 1.5) {
+  //  float _squareSize = map(x, 0, underlay.width, squareSize / 3, squareSize);
+  //  underlay.strokeWeight(map(x, 0, underlay.width, 10, 20));
+  //  for(int y = 0; y < underlay.height; y+= squareSize * 1.5) {
+  //    underlay.pushMatrix();
+  //    underlay.translate(x + (frameIndex * squareSize / FRAMES),y);
+  //    underlay.rotate((TWO_PI / FRAMES) * frameIndex);
+  //    underlay.rect(0, 0, _squareSize, _squareSize);
+  //    underlay.popMatrix();
+  //  }
+  //}
+  
+  /* Draw a crazy sun thing */
+  underlay.stroke(0);
+  underlay.strokeWeight(10);
+  underlay.noFill();
+  underlay.rectMode(CENTER);
+  underlay.pushMatrix();
+  underlay.translate(underlay.width / 2, underlay.height / 2);
+  underlay.rotate(map(frameIndex, 0, FRAMES, 0, TWO_PI));
+  int numRings = 5;
+  int minSize = 20;
+  int maxSize = 40;
+  for (int i = 0; i < numRings; i++) {
+    float radius = map(i, 0, numRings, 20, width / 2);
+    float numTriangles = map(i, 0, numRings, 3, 28);
+    
+    for (int j = 0; j < numTriangles; j++) {
+      float ringAngle = map(j, 0, numTriangles, 0, TWO_PI);
+      float x = radius * cos(ringAngle);
+      float y = radius * sin(ringAngle);
+      float size;
+      if (frameIndex <= FRAMES / 2) {
+        if (i % 2 == 0) {
+          size = map(frameIndex, 0, FRAMES / 2, minSize, maxSize);
+        } else {
+          size = map(frameIndex, 0, FRAMES / 2, maxSize, minSize);
+        }
+      } else {
+        if (i % 2 == 0) {
+          size = map(frameIndex, FRAMES / 2, FRAMES, maxSize, minSize);
+        } else {
+          size = map(frameIndex, FRAMES / 2, FRAMES, minSize, maxSize);
+        }
+      }
+      
+      float triangleRotation;
+      if (i % 2 == 0) {
+        triangleRotation = ringAngle;
+      } else {
+        triangleRotation = -ringAngle;
+      }
+      underlay.triangle(
+        x + size * cos(triangleRotation),
+        y + size * sin(triangleRotation),
+        x + size * cos(triangleRotation + TWO_PI / 3.0),
+        y + size * sin(triangleRotation + TWO_PI / 3.0),
+        x + size * cos(triangleRotation + TWO_PI / 1.5),
+        y + size * sin(triangleRotation + TWO_PI / 1.5)
+      );
     }
   }
-  
-  //underlay.ellipse(w - p.x, h - p.y, circleSize, circleSize);
+  underlay.popMatrix();
   underlay.endDraw();
 }
